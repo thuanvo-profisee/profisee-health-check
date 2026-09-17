@@ -32,12 +32,15 @@ Open the [Build Extension workflow](https://github.com/thuanvo-profisee/profisee
 click the most recent successful run, and download the artifact at the bottom of
 the page. GitHub serves artifacts as a zip — unzip it and load it the same way.
 
-To cut a release, tag a commit and push the tag:
+**Cutting a release**
 
-```bash
-git tag v1.1.0
-git push origin v1.1.0
-```
+Releases are automatic: bump `"version"` in `public/manifest.json`, merge to
+`main`, and the workflow tags the commit `v<version>` and publishes the release
+with the zip attached. If a tag for that version already exists the run just
+builds and uploads the artifact, so ordinary pushes don't create releases.
+
+Pushing a `v*` tag by hand still works and always releases, using the tag as the
+version.
 
 ## Development
 
