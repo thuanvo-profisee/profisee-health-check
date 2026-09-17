@@ -14,6 +14,31 @@ Each server is stored as a base URL (e.g. `https://corpltr50.corp.profisee.com`)
 and `/profisee/rest/health` is appended automatically, unless the URL already
 ends in `/health`.
 
+## Install
+
+Prebuilt packages are produced by GitHub Actions — no local build needed.
+
+**From a release (recommended)**
+
+1. Go to [Releases](https://github.com/thuanvo-profisee/profisee-health-check/releases)
+   and download `profisee-health-check-v<version>.zip` from the latest release.
+2. Unzip it.
+3. Open `chrome://extensions`, turn on **Developer mode** (top right).
+4. Click **Load unpacked** and select the unzipped folder.
+
+**From the latest build on `main`**
+
+Open the [Build Extension workflow](https://github.com/thuanvo-profisee/profisee-health-check/actions/workflows/build-extension.yml),
+click the most recent successful run, and download the artifact at the bottom of
+the page. GitHub serves artifacts as a zip — unzip it and load it the same way.
+
+To cut a release, tag a commit and push the tag:
+
+```bash
+git tag v1.1.0
+git push origin v1.1.0
+```
+
 ## Development
 
 ```bash

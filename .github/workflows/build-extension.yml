@@ -1,0 +1,69 @@
+name: Build Extension
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Read manifest version
+        id: meta
+        run: |
+          # A tag wins over the manifest version so the asset name matches the release.
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
+            version="${GITHUB_REF#refs/tags/v}"
+          else
+            version=$(node -p "require('./dist/manifest.json').version")
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "name=profisee-health-check-v${version}" >> "$GITHUB_OUTPUT"
+
+      - name: Package extension
+        run: |
+          cd dist
+          zip -r "../${{ steps.meta.outputs.name }}.zip" .
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.meta.outputs.name }}
+          path: dist
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Publish release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ steps.meta.outputs.name }}.zip
+          generate_release_notes: true
+          body: |
+            ## Install (Chrome developer mode)
+
+            1. Download `${{ steps.meta.outputs.name }}.zip` below and unzip it.
+            2. Open `chrome://extensions`.
+            3. Turn on **Developer mode** (top right).
+            4. Click **Load unpacked** and select the unzipped folder.

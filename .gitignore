@@ -1,2 +1,6 @@
 node_modules/
 dist/
+
+# Local packaging output (dist.pem is a private signing key - never commit)
+dist.crx
+dist.pem
